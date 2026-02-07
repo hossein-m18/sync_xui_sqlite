@@ -2,7 +2,6 @@
 
 # ============================================
 #  WinNet XUI Sync - Installer & Manager
-#  GitHub: https://github.com/YOUR_USERNAME/YOUR_REPO
 # ============================================
 
 set -e
@@ -29,6 +28,7 @@ print_banner() {
     echo "========================================"
     echo "    WinNet XUI Sync Manager"
     echo "    Subscription Sync Tool"
+    echo "https://github.com/Win-Net/sync_xui_sqlite"
     echo "========================================"
     echo -e "${NC}"
 }
