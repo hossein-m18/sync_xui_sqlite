@@ -16,6 +16,12 @@ With this script, you can easily create multi-inbound accounts with all versions
 - Description synchronization (add/edit/delete)
 - User limit synchronization (active/inactive/number)
 
+### **Tunnel inbounds equalization**
+
+- **Unification of tunnel & tun inbounds**
+- Unification of up, down, total traffic of tunnel and tun inbounds in 3X-UI
+- Unification of decrease/increase or reset of inbound traffic
+- Unification of expiration date (decrease/increase/delete)
 ---
 
 ## 📥 Easy installation and setup guide
