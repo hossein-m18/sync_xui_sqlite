@@ -25,7 +25,7 @@ Smart and automatic installation of all prerequisites and complete script config
 ## Quick installation instructions :
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/Win-Net/winnet/main/winnet.sh) install
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/Win-Net/sync_xui_sqlite/main/install.sh)"
 ```
 
 # Command Line Interface (CLI)
