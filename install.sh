@@ -109,8 +109,7 @@ show_menu() {
     echo -e "  ${GREEN}1)${NC} Enable Service"
     echo -e "  ${RED}2)${NC} Disable Service"
     echo -e "  ${BLUE}3)${NC} Update Script"
-    echo -e "  ${YELLOW}4)${NC} View Live Logs"
-    echo -e "  ${MAGENTA}5)${NC} Uninstall"
+    echo -e "  ${YELLOW}4)${NC} Uninstall"
     echo -e "  ${CYAN}0)${NC} Exit"
     echo ""
     echo "  ---------------------------------"
@@ -168,12 +167,6 @@ update_script() {
     echo ""
     read -p "Press Enter to continue..." _
 }
-view_logs() {
-    echo ""
-    echo -e "${BLUE}[i]${NC} Showing live logs (Ctrl+C to exit)..."
-    echo ""
-    journalctl -u sync_xui.service -f
-}
 uninstall() {
     echo ""
     echo -e "${RED}${BOLD}WARNING: All WinNet XUI Sync files will be removed!${NC}"
@@ -210,8 +203,7 @@ while true; do
         1) enable_service ;;
         2) disable_service ;;
         3) update_script ;;
-        4) view_logs ;;
-        5) uninstall ;;
+        4) uninstall ;;
         0) echo ""; echo -e "${CYAN}Bye!${NC}"; echo ""; exit 0 ;;
         *) echo -e "${RED}[ERROR]${NC} Invalid option!"; sleep 1 ;;
     esac
