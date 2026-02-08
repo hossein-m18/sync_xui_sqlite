@@ -15,7 +15,7 @@ MAGENTA='\033[0;35m'
 NC='\033[0m'
 BOLD='\033[1m'
 
-GITHUB_RAW="https://raw.githubusercontent.com/Win-Net/sync_xui_sqlite/main"
+GITHUB_RAW="https://raw.githubusercontent.com/hossein-m18/sync_xui_sqlite/main"
 
 # Client Sync
 SCRIPT_PATH="/usr/local/bin/sync_xui_sqlite.py"
@@ -35,7 +35,7 @@ print_banner() {
     echo "========================================"
     echo "    WinNet XUI Sync Manager"
     echo "    Subscription Sync Tool"
-    echo "https://github.com/Win-Net/sync_xui_sqlite"
+    echo "https://github.com/hossein-m18/sync_xui_sqlite"
     echo "========================================"
     echo -e "${NC}"
 }
@@ -87,7 +87,7 @@ TUNNEL_SCRIPT_PATH="/usr/local/bin/sync_inbound_tunnel.py"
 TUNNEL_SERVICE_PATH="/etc/systemd/system/sync_inbound_tunnel.service"
 VENV_PATH="/opt/xui_sync_env"
 DB_PATH="/etc/x-ui/x-ui.db"
-GITHUB_RAW="https://raw.githubusercontent.com/Win-Net/sync_xui_sqlite/main"
+GITHUB_RAW="https://raw.githubusercontent.com/hossein-m18/sync_xui_sqlite/main"
 
 check_root() {
     if [ "$(id -u)" -ne 0 ]; then
@@ -115,7 +115,7 @@ show_menu() {
     echo "========================================"
     echo "    WinNet XUI Sync Manager"
     echo "    Subscription Sync Tool"
-    echo "https://github.com/Win-Net/sync_xui_sqlite"
+    echo "https://github.com/hossein-m18/sync_xui_sqlite"
     echo "========================================"
     echo -e "${NC}"
     echo -e "  Client Sync:  $(get_service_status sync_xui.service)"

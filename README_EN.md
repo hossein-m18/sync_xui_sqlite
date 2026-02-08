@@ -1,6 +1,7 @@
 [English](/README_EN.md) | [فارسی](/README.md)
 
 # 🏆 WinNet
+
 **WinNet** - Subscription-based synchronization script
 With this script, you can easily create multi-inbound accounts with all versions and forks of X-UI
 
@@ -22,6 +23,7 @@ With this script, you can easily create multi-inbound accounts with all versions
 - Unification of up, down, total traffic of tunnel and tun inbounds in 3X-UI
 - Unification of decrease/increase or reset of inbound traffic
 - Unification of expiration date (decrease/increase/delete)
+
 ---
 
 ## 📥 Easy installation and setup guide
@@ -31,7 +33,7 @@ Smart and automatic installation of all prerequisites and complete script config
 ## Quick installation instructions :
 
 ```bash
-sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/Win-Net/sync_xui_sqlite/main/install.sh)"
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/hossein-m18/sync_xui_sqlite/main/install.sh)"
 ```
 
 # Command Line Interface (CLI)
@@ -41,6 +43,7 @@ winnet-xui
 ```
 
 ## 🎁 Financial support
+
 If **WinNet** is useful and practical for you and you would like to support its development, you can support it financially on one of the following crypto networks:
 
 - TON network : `UQAwote266R2INGvHR2DS-B7jeSjIlxZIlx851LNvvHxmwY8`
