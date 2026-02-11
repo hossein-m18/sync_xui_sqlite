@@ -172,8 +172,61 @@ def ensure_seed(conn, debug=False):
     conn.commit()
     if debug: print(f"[INFO] seeded {n} entries")
 
+def link_sub_by_uuid(conn, debug=False):
+    """Pre-sync: اکانت‌هایی که UUID مشترک دارن ولی subId ندارن، subId بگیرن"""
+    cur = conn.cursor()
+    cur.execute("SELECT id, settings FROM inbounds")
+    inbs = [(int(r[0]), jload(r[1])) for r in cur.fetchall()]
+    
+    # Group all clients by UUID across all inbounds
+    uuid_map = {}  # uuid -> [(iid, client_index, client, subId)]
+    for iid, settings in inbs:
+        for idx, cl in enumerate(settings.get("clients", [])):
+            uuid = (cl.get("id") or "").strip()
+            if not uuid: continue
+            sub = (cl.get("subId") or cl.get("subscription") or "").strip()
+            uuid_map.setdefault(uuid, []).append((iid, idx, cl, sub))
+    
+    changes = 0
+    for uuid, clients in uuid_map.items():
+        if len(clients) < 2: continue
+        
+        # پیدا کردن subId غیرخالی (اولویت با اونی که داره)
+        best_sub = ""
+        for _, _, _, sub in clients:
+            if sub:
+                best_sub = sub
+                break
+        
+        if not best_sub: continue
+        
+        # اعمال subId مشترک به همه
+        for iid, idx, cl, sub in clients:
+            if sub != best_sub:
+                cl["subId"] = best_sub
+                # Write back to DB
+                cur2 = conn.cursor()
+                cur2.execute("SELECT settings FROM inbounds WHERE id=?", (iid,))
+                r = cur2.fetchone()
+                s = jload(r[0] if r else "{}")
+                for c in s.get("clients", []):
+                    if (c.get("id") or "") == uuid:
+                        c["subId"] = best_sub
+                        break
+                cur2.execute("UPDATE inbounds SET settings=? WHERE id=?", (jdump(s), iid))
+                changes += 1
+                if debug:
+                    print(f"[LINK] UUID={uuid[:8]}... iid={iid} subId set to {best_sub}")
+    
+    if changes:
+        conn.commit()
+        if debug: print(f"[INFO] linked {changes} clients by UUID")
+    return changes
+
 def sync_once(conn, apply=False, debug=False):
     ensure_meta(conn)
+    # Pre-sync: لینک subId از طریق UUID مشترک
+    link_sub_by_uuid(conn, debug=debug)
     cur=conn.cursor()
     ct=load_ct_map(conn)
     inbs=load_inbounds(conn)
@@ -340,8 +393,9 @@ def sync_once(conn, apply=False, debug=False):
                            or int(ref_sig.get("reset") or 0)==1 \
                            or actual_reset
 
-        # Determine if reference client should be enabled
-        ref_should_enable = should_be_enabled(ref_client, ref["ct"])
+        # Enable status مستقیم از reference سینک میشه
+        # پنل X-UI خودش بعد حجم/انقضا خاموش میکنه، ما فقط سینک میکنیم
+        ref_enable = int(ref_sig.get("enable", 1))
 
         for _, e, _ in with_lc:
             ch={}
@@ -406,11 +460,17 @@ def sync_once(conn, apply=False, debug=False):
                 if cur_quota_db != q_target:
                     ch["quota_db"]=(cur_quota_db, q_target)
 
-            # Check enable status
+            # Check enable status - مستقیم از ref
             cur_enable = int(e["sig"].get("enable", 1))
-            target_enable = 1 if ref_should_enable else 0
+            target_enable = ref_enable
             if cur_enable != target_enable:
                 ch["enable"] = (cur_enable, target_enable)
+
+            # Check UUID sync
+            cur_uuid = e["client"].get("id") or ""
+            ref_uuid = ref_client.get("id") or ""
+            if ref_uuid and cur_uuid != ref_uuid:
+                ch["uuid"] = (cur_uuid, ref_uuid)
 
             if ch:
                 # برای حالت غیر reset، target_up و target_down رو به درستی ست کن
@@ -449,7 +509,7 @@ def sync_once(conn, apply=False, debug=False):
     for p in plans:
         iid=p["iid"]; email=p["email"]; ch=p["changes"]; ref=p["ref_sig"]; reset_flag=p.get("reset_flag", False)
 
-        if any(k in ch for k in ("quota","limitIp","expiry","comment")):
+        if any(k in ch for k in ("quota","limitIp","expiry","comment","uuid")):
             s=get_settings(iid)
             changed=False
             for c in s.get("clients", []):
@@ -466,6 +526,10 @@ def sync_once(conn, apply=False, debug=False):
                     if "comment" in ch:
                         c["comment"]=ch["comment"][1]
                         changed=True
+                    if "uuid" in ch:
+                        c["id"]=ch["uuid"][1]
+                        changed=True
+                    if changed:
                         c["updated_at"] = int(p.get("ref_updated") or int(time.time() * 1000))
                     break
             if changed:
